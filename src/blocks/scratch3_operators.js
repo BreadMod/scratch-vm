@@ -20,20 +20,28 @@ class Scratch3OperatorsBlocks {
             operator_subtract: this.subtract,
             operator_multiply: this.multiply,
             operator_divide: this.divide,
+            operator_floor_divide: this.floorDivide,
             operator_lt: this.lt,
             operator_equals: this.equals,
             operator_gt: this.gt,
+            operator_lte: this.lte,
+            operator_not_equals: this.nequals,
+            operator_gte: this.gte,
             operator_and: this.and,
             operator_or: this.or,
             operator_not: this.not,
             operator_random: this.random,
+            operator_advanced_random: this.advanced_random,
             operator_join: this.join,
             operator_letter_of: this.letterOf,
             operator_length: this.length,
             operator_contains: this.contains,
+            operator_negate: this.negate,
             operator_mod: this.mod,
             operator_round: this.round,
-            operator_mathop: this.mathop
+            operator_mathop: this.mathop,
+            operator_true: this.true,
+            operator_false: this.false
         };
     }
 
@@ -53,6 +61,10 @@ class Scratch3OperatorsBlocks {
         return Cast.toNumber(args.NUM1) / Cast.toNumber(args.NUM2);
     }
 
+    floorDivide (args) {
+        return Math.floor(Cast.toNumber(args.NUM1) / Cast.toNumber(args.NUM2));
+    }
+
     lt (args) {
         return Cast.compare(args.OPERAND1, args.OPERAND2) < 0;
     }
@@ -63,6 +75,18 @@ class Scratch3OperatorsBlocks {
 
     gt (args) {
         return Cast.compare(args.OPERAND1, args.OPERAND2) > 0;
+    }
+
+    lte (args) {
+        return Cast.compare(args.OPERAND1, args.OPERAND2) <= 0;
+    }
+    
+    nequals (args) {
+        return Cast.compare(args.OPERAND1, args.OPERAND2) !== 0;
+    }
+
+    gte (args) {
+        return Cast.compare(args.OPERAND1, args.OPERAND2) >= 0;
     }
 
     and (args) {
@@ -93,6 +117,25 @@ class Scratch3OperatorsBlocks {
         return (Math.random() * (high - low)) + low;
     }
 
+    advanced_random (args) {
+        return this._advanced_random(args.FROM, args.TO, args.STEP);
+    }
+
+    _advanced_random (from, to, step) { // used by compiler
+        const nFrom = Cast.toNumber(from);
+        const nTo = Cast.toNumber(to);
+        const nStep = Cast.toNumber(step);
+        const low = nFrom <= nTo ? nFrom : nTo;
+        const high = nFrom <= nTo ? nTo : nFrom;
+        if (low === high) return low;
+        if (nStep === 0) return low;
+        const stepAbs = Math.abs(nStep);
+        const range = high - low;
+        const numSteps = Math.floor(range / stepAbs);
+        const randomStep = Math.floor(Math.random() * (numSteps + 1));
+        return low + (randomStep * stepAbs);
+    }
+
     join (args) {
         return Cast.toString(args.STRING1) + Cast.toString(args.STRING2);
     }
@@ -116,6 +159,10 @@ class Scratch3OperatorsBlocks {
             return Cast.toString(string).toLowerCase();
         };
         return format(args.STRING1).includes(format(args.STRING2));
+    }
+
+    negate (args) {
+        return -Cast.toNumber(args.NUM);
     }
 
     mod (args) {
@@ -151,6 +198,14 @@ class Scratch3OperatorsBlocks {
         case '10 ^': return Math.pow(10, n);
         }
         return 0;
+    }
+
+    true () {
+        return true;
+    }
+    
+    false () {
+        return false;
     }
 }
 
